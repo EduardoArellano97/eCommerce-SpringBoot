@@ -1,12 +1,21 @@
 package com.example.eCommerceSpringBoot.model;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "Order details")
 public class OrderDetail {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private Double quantity;
     private Double price;
     private Double total;
-
+    @OneToOne
+    private Order order;
+    @ManyToOne
+    private Product product;
     public OrderDetail() {
     }
 
@@ -58,6 +67,22 @@ public class OrderDetail {
         this.total = total;
     }
 
+    public Order getOrder() {
+        return order;
+    }
+
+    public void setOrder(Order order) {
+        this.order = order;
+    }
+
+    public Product getProduct() {
+        return product;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
+    }
+
     @Override
     public String toString() {
         return "OrderDetail{" +
@@ -66,6 +91,8 @@ public class OrderDetail {
                 ", quantity=" + quantity +
                 ", price=" + price +
                 ", total=" + total +
+                ", order=" + order +
+                ", product=" + product +
                 '}';
     }
 }

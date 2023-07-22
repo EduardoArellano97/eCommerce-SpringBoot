@@ -1,13 +1,24 @@
 package com.example.eCommerceSpringBoot.model;
 
+import jakarta.persistence.*;
+
 import java.util.Date;
 
+@Entity
+@Table(name= "Orders")
 public class Order {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String number;
     private Date creationDate;
     private Date deliveredDate;
     private Double total;
+
+    @ManyToOne
+    private User user;
+    @OneToOne(mappedBy = "order")
+    private OrderDetail orderDetail;
 
     public Order() {
     }
@@ -60,6 +71,22 @@ public class Order {
         this.total = total;
     }
 
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public OrderDetail getOrderDetail() {
+        return orderDetail;
+    }
+
+    public void setOrderDetail(OrderDetail orderDetail) {
+        this.orderDetail = orderDetail;
+    }
+
     @Override
     public String toString() {
         return "Order{" +
@@ -68,6 +95,8 @@ public class Order {
                 ", creationDate=" + creationDate +
                 ", deliveredDate=" + deliveredDate +
                 ", total=" + total +
+                ", user=" + user +
+                ", orderDetail=" + orderDetail +
                 '}';
     }
 }

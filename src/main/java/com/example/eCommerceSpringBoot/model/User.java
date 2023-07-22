@@ -1,6 +1,15 @@
 package com.example.eCommerceSpringBoot.model;
 
+import jakarta.persistence.*;
+
+import java.util.List;
+
+@Entity
+@Table(name = "Users")
+
 public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private String username;
@@ -9,6 +18,11 @@ public class User {
     private String telephone;
     private String type;
     private String password;
+
+    @OneToMany(mappedBy = "user")
+    private List<Product> products;
+    @OneToMany(mappedBy = "user")
+    private List<Order> orders;
 
     public User() {
     }
@@ -88,6 +102,14 @@ public class User {
         this.password = password;
     }
 
+    public List<Product> getProducts() {
+        return products;
+    }
+
+    public void setProducts(List<Product> products) {
+        this.products = products;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -99,6 +121,7 @@ public class User {
                 ", telephone='" + telephone + '\'' +
                 ", type='" + type + '\'' +
                 ", password='" + password + '\'' +
+                ", products=" + products +
                 '}';
     }
 }
