@@ -1,35 +1,41 @@
 package com.example.eCommerceSpringBoot.service;
 
 import com.example.eCommerceSpringBoot.model.Product;
-import com.example.eCommerceSpringBoot.repository.ProductRepository;
+import com.example.eCommerceSpringBoot.repository.IProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
 public class ProductServiceImpl implements ProductService {
     @Autowired
-    private ProductRepository productRepository;
+    private IProductRepository IProductRepository;
 
     @Override
     public Product save(Product product) {
-        return productRepository.save(product);
+        return IProductRepository.save(product);
     }
 
     @Override
     public Optional<Product> get(Long id) {
-        return productRepository.findById(id);
+        return IProductRepository.findById(id);
     }
 
     @Override
     public void update(Product product) {
-        productRepository.save(product);
+        IProductRepository.save(product);
 
     }
 
     @Override
     public void delete(Long id) {
-        productRepository.deleteById(id);
+        IProductRepository.deleteById(id);
+    }
+
+    @Override
+    public List<Product> findAll() {
+        return IProductRepository.findAll();
     }
 }

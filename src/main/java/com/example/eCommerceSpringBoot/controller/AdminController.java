@@ -1,7 +1,7 @@
 package com.example.eCommerceSpringBoot.controller;
 
 import com.example.eCommerceSpringBoot.model.Product;
-import com.example.eCommerceSpringBoot.service.ProductService;
+import com.example.eCommerceSpringBoot.service.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,10 +14,10 @@ import java.util.List;
 @RequestMapping("/admin")
 public class AdminController {
     @Autowired
-    private ProductService productService;
+    private IProductService IProductService;
     @GetMapping("")
     public String home(Model model){
-        List<Product> products = productService.findAll();
+        List<Product> products = IProductService.findAll();
         model.addAttribute("products",products);
 
         return "home";

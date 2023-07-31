@@ -2,7 +2,7 @@ package com.example.eCommerceSpringBoot.controller;
 
 import com.example.eCommerceSpringBoot.model.Product;
 import com.example.eCommerceSpringBoot.model.User;
-import com.example.eCommerceSpringBoot.service.ProductService;
+import com.example.eCommerceSpringBoot.service.IProductService;
 import com.example.eCommerceSpringBoot.service.UploadFileService;
 import org.slf4j.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,14 +19,14 @@ import java.util.Optional;
 @RequestMapping("/products")
 public class ProductController {
     @Autowired
-    private ProductService productService;
+    private IProductService IProductService;
     @Autowired
     private UploadFileService uploadFileService;
     public Logger logger = LoggerFactory.getLogger(ProductController.class);
 
     @GetMapping("")
     public String show(Model model){
-        model.addAttribute("products",productService.findAll());
+        model.addAttribute("products", IProductService.findAll());
         return "show";
     }
 
@@ -55,7 +55,7 @@ public class ProductController {
             String imageName= uploadFileService.saveImage(file); //file es el archivo recabado de la vista create.
             product.setImage(imageName);
         }
-        productService.save(product);
+        IProductService.save(product);
         return "redirect:/products";
     }
     @GetMapping("/edit/{id}")
@@ -66,7 +66,7 @@ public class ProductController {
         entonces la información que este tenga para que, posteriormente, podamos guardar los cambios.*/
 
         Product product= new Product();
-        Optional<Product> optionalProduct = productService.get(id);
+        Optional<Product> optionalProduct = IProductService.get(id);
         product= optionalProduct.get();
         logger.info("Producto buscado: {}", product);
         model.addAttribute("product",product);
@@ -76,7 +76,7 @@ public class ProductController {
     public String update(Product product, @RequestParam("img") MultipartFile file) throws IOException{
         /*Para poder hacer actualizaciones necesitamos obtener el producto según el ID...*/
         Product product1 = new Product();
-        product1=productService.get(product.getId()).get();
+        product1= IProductService.get(product.getId()).get();
 
 
         if(file.isEmpty()){ //Se edita el producto pero no se cambia la imagen
@@ -89,19 +89,19 @@ public class ProductController {
             product.setImage(imageName);
         }
         product.setUser(product1.getUser());
-        productService.update(product);
+        IProductService.update(product);
         return "redirect:/products";
     }
     @GetMapping("/delete/{id}")
     public String delete(@PathVariable Long id){
         Product product=new Product();
-        product=productService.get(id).get();
+        product= IProductService.get(id).get();
         /*Si no es igual a la imagen default, lo que significa que tiene información, procede.*/
         if (!product.getImage().equals("default.jpg")){
             uploadFileService.delete(product.getImage());
         }
 
-        productService.delete(id);
+        IProductService.delete(id);
         return "redirect:/products";
     }
 
