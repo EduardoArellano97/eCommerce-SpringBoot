@@ -4,6 +4,8 @@ import com.example.eCommerceSpringBoot.model.Order;
 import com.example.eCommerceSpringBoot.model.OrderDetail;
 import com.example.eCommerceSpringBoot.model.Product;
 import com.example.eCommerceSpringBoot.model.User;
+import com.example.eCommerceSpringBoot.service.IOrderDetailService;
+import com.example.eCommerceSpringBoot.service.IOrderService;
 import com.example.eCommerceSpringBoot.service.IProductService;
 import com.example.eCommerceSpringBoot.service.IUserService;
 import org.slf4j.Logger;
@@ -14,6 +16,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,6 +35,11 @@ public class HomeController {
     private IProductService productService;
     @Autowired
     private IUserService userService;
+    @Autowired
+    private IOrderService orderService;
+    @Autowired
+    private IOrderDetailService orderDetailService;
+
     @GetMapping("")
     public String home(Model model){
 
@@ -125,6 +133,28 @@ public class HomeController {
         model.addAttribute("user", user);
 
         return "order_summary";
+    }
+    @GetMapping("/saveOrder")
+    public String saveOrder(){
+            //1. Llenado de datos referentes a la orden y su creación
+        Date creationDate= new Date();
+        order.setCreationDate(creationDate);
+        order.setNumber(orderService.OrderNumberGenerator());
+            //2. Llenado de datos referente al usuario creador.(Versión sin implementación de Spring Security.)
+        User user = userService.findById(1L).get();
+        order.setUser(user);
+            //3. Guardar la orden con los datos añadidos
+        orderService.save(order);
+            //4. Guardar los detalles con forEach de la lista details
+        for (OrderDetail orderDetail: details) {
+                orderDetail.setOrder(order);
+                orderDetailService.save(orderDetail);
+        }
+            //5.Limpiar orden y lista
+        order=new Order();
+        details.clear();
+
+        return "redirect:/";
     }
 
 }
