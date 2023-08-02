@@ -2,8 +2,11 @@ package com.example.eCommerceSpringBoot.controller;
 
 import com.example.eCommerceSpringBoot.model.Product;
 import com.example.eCommerceSpringBoot.model.User;
+import com.example.eCommerceSpringBoot.repository.IUserRepository;
 import com.example.eCommerceSpringBoot.service.IProductService;
+import com.example.eCommerceSpringBoot.service.IUserService;
 import com.example.eCommerceSpringBoot.service.UploadFileService;
+import jakarta.servlet.http.HttpSession;
 import org.slf4j.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -22,7 +25,11 @@ public class ProductController {
     private IProductService IProductService;
     @Autowired
     private UploadFileService uploadFileService;
+    @Autowired
+    private IUserService userService;
     public Logger logger = LoggerFactory.getLogger(ProductController.class);
+    @Autowired
+    private IUserRepository iUserRepository;
 
     @GetMapping("")
     public String show(Model model){
@@ -35,7 +42,7 @@ public class ProductController {
         return "create";
     }
     @PostMapping("/save")
-    public String save(Product product, @RequestParam("img") MultipartFile file) throws IOException {
+    public String save(Product product, @RequestParam("img") MultipartFile file,HttpSession session) throws IOException {
 
         /* Los datos que se ingresen en el formulario que se encuentra en la vista /products/create, serán utilizados
          para llenar los atributos que el objeto product requiere, por ello al imprimir con Logger obtendremos los datos
@@ -47,7 +54,7 @@ public class ProductController {
         /* En el constructor también se solicita un usuario, el cual creamos aquí mismo con el objeto user, dotandole
          de atributos para después ser utilizados.*/
 
-        User user = new User(1L,"","","","","","","");
+        User user = userService.findById(Long.parseLong(session.getAttribute("UserId").toString())).get();
         product.setUser(user);
 
         /* A continuación  se implementa el guardado de la imagen,requisitandola de la vista e ingresandola en file. */

@@ -8,6 +8,7 @@ import com.example.eCommerceSpringBoot.service.IOrderDetailService;
 import com.example.eCommerceSpringBoot.service.IOrderService;
 import com.example.eCommerceSpringBoot.service.IProductService;
 import com.example.eCommerceSpringBoot.service.IUserService;
+import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,9 +43,11 @@ public class HomeController {
     private IOrderDetailService orderDetailService;
 
     @GetMapping("")
-    public String home(Model model){
-
+    public String home(Model model, HttpSession session){
+        logger.info("sesión de usuario: {}", session.getAttribute("UserId"));
         model.addAttribute("products", productService.findAll());
+        
+
         return "user_home";
     }
 
@@ -127,8 +130,8 @@ public class HomeController {
         return "cart";
     }
     @GetMapping("/orderSummary")
-    public String orderSummary(Model model){
-        User user= userService.findById(1L).get();
+    public String orderSummary(Model model, HttpSession session){
+        User user= userService.findById(Long.parseLong(session.getAttribute("UserId").toString())).get();
         model.addAttribute("cart",details);
         model.addAttribute("order",order);
         model.addAttribute("user", user);
@@ -136,20 +139,20 @@ public class HomeController {
         return "order_summary";
     }
     @GetMapping("/saveOrder")
-    public String saveOrder(){
+    public String saveOrder(HttpSession session){
             //1. Llenado de datos referentes a la orden y su creación
         Date creationDate= new Date();
         order.setCreationDate(creationDate);
         order.setNumber(orderService.OrderNumberGenerator());
             //2. Llenado de datos referente al usuario creador.(Versión sin implementación de Spring Security.)
-        User user = userService.findById(1L).get();
+        User user = userService.findById(Long.parseLong(session.getAttribute("UserId").toString())).get();
         order.setUser(user);
             //3. Guardar la orden con los datos añadidos
         orderService.save(order);
             //4. Guardar los detalles con forEach de la lista details
-        for (OrderDetail orderDetail: details) {
-                orderDetail.setOrder(order);
-                orderDetailService.save(orderDetail);
+        for (OrderDetail dt: details) {
+            dt.setOrder(order);
+                orderDetailService.save(dt);
         }
             //5.Limpiar orden y lista
         order=new Order();
