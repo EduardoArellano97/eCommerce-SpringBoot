@@ -1,6 +1,8 @@
 package com.example.eCommerceSpringBoot.controller;
 
+import com.example.eCommerceSpringBoot.model.Order;
 import com.example.eCommerceSpringBoot.model.User;
+import com.example.eCommerceSpringBoot.service.IOrderService;
 import com.example.eCommerceSpringBoot.service.IUserService;
 
 import jakarta.servlet.http.HttpSession;
@@ -8,10 +10,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -22,6 +27,8 @@ public class UserController {
 
     @Autowired
     private IUserService userService;
+    @Autowired
+    private IOrderService orderService;
 
     @GetMapping("/register")
     public String register() {
@@ -60,5 +67,29 @@ public class UserController {
         }
 
         return "redirect:/";
+    }
+    @GetMapping("/shopping")
+    public String shopping(Model model, HttpSession session){
+        model.addAttribute("session",session.getAttribute("UserId"));
+        User user= userService.findById(Long.parseLong(session.getAttribute("UserId").toString())).get();
+        List<Order> orders= orderService.findByUser(user);
+        model.addAttribute("orders",orders);
+
+        return "shopping";
+    }
+    @GetMapping("/detail/{id}")
+    public String shoppingDetail(@PathVariable Long id, Model model, HttpSession session){
+
+        logger.info("Id de la sesión: {}", id);
+        Optional<Order> order= orderService.findById(id);
+        //Se obtiene la Lista del controlador Order que accede a los detalles.
+        model.addAttribute("details", order.get().getOrderDetail());
+
+
+
+        //Sesion
+        model.addAttribute("session",session.getAttribute("UserId"));
+
+        return "shopping_detail";
     }
 }
