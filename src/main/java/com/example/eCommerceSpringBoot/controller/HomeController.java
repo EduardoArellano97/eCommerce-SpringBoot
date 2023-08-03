@@ -47,7 +47,7 @@ public class HomeController {
         logger.info("sesión de usuario: {}", session.getAttribute("UserId"));
         model.addAttribute("products", productService.findAll());
         //Sesión
-        model.addAttribute("session", session.getAttribute("UserId"));
+        model.addAttribute("current_session", session.getAttribute("UserId"));
 
         return "user_home";
     }
