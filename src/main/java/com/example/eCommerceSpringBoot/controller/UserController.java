@@ -70,7 +70,7 @@ public class UserController {
     }
     @GetMapping("/shopping")
     public String shopping(Model model, HttpSession session){
-        model.addAttribute("session",session.getAttribute("UserId"));
+        model.addAttribute("current_session",session.getAttribute("UserId"));
         User user= userService.findById(Long.parseLong(session.getAttribute("UserId").toString())).get();
         List<Order> orders= orderService.findByUser(user);
         model.addAttribute("orders",orders);
@@ -88,8 +88,13 @@ public class UserController {
 
 
         //Sesion
-        model.addAttribute("session",session.getAttribute("UserId"));
+        model.addAttribute("current_session",session.getAttribute("UserId"));
 
         return "shopping_detail";
+    }
+    @GetMapping("/logout")
+    public String logout(HttpSession session){
+        session.removeAttribute("UserId");
+        return "redirect:/";
     }
 }

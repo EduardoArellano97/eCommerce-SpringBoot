@@ -127,7 +127,7 @@ public class HomeController {
     public String getCart(Model model, HttpSession session){
         model.addAttribute("cart",details);
         model.addAttribute("order",order);
-        model.addAttribute("session",session.getAttribute("UserId"));
+        model.addAttribute("current_session",session.getAttribute("UserId"));
         return "cart";
     }
     @GetMapping("/orderSummary")
